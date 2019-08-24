@@ -28,27 +28,47 @@ type DefaultBinExprStrategy struct{}
 // Assumes lhs is a collection
 type LHSOverRHSStrategy struct{}
 
+func functionEvalStrategy(op sysl.Expr_BinExpr_Op) (Strategy, bool) {
+	switch op {
+	case sysl.Expr_BinExpr_EQ:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_ADD:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_SUB:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_MUL:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_MOD:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_DIV:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_IN:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_BITOR:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_GT:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_LT:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_GE:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_LE:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_NE:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_AND:
+		return DefaultBinExprStrategy{}, true
+	case sysl.Expr_BinExpr_FLATTEN:
+		return LHSOverRHSStrategy{}, true
+	case sysl.Expr_BinExpr_WHERE:
+		return LHSOverRHSStrategy{}, true
+	default:
+		return nil, false
+	}
+}
+
 //nolint:gochecknoglobals
 var (
-	functionEvalStrategy = map[sysl.Expr_BinExpr_Op]Strategy{
-		sysl.Expr_BinExpr_EQ:      DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_ADD:     DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_SUB:     DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_MUL:     DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_MOD:     DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_DIV:     DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_IN:      DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_BITOR:   DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_GT:      DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_LT:      DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_GE:      DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_LE:      DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_NE:      DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_AND:     DefaultBinExprStrategy{},
-		sysl.Expr_BinExpr_FLATTEN: LHSOverRHSStrategy{},
-		sysl.Expr_BinExpr_WHERE:   LHSOverRHSStrategy{},
-	}
-
 	// key = op, lhs & rhs types
 	valueFunctions = map[string]evalValueFunc{
 		makeKey(sysl.Expr_BinExpr_ADD, ValueInt, ValueInt):       addInt64,
@@ -135,7 +155,7 @@ func (op LHSOverRHSStrategy) eval(txApp *sysl.Application, assign Scope, binexpr
 }
 
 func evalBinExpr(txApp *sysl.Application, assign Scope, binexpr *sysl.Expr_BinExpr) *sysl.Value {
-	if strategy, has := functionEvalStrategy[binexpr.Op]; has {
+	if strategy, has := functionEvalStrategy(binexpr.Op); has {
 		return strategy.eval(txApp, assign, binexpr)
 	}
 	panic(errors.Errorf("Unsupported operation: %s", binexpr.Op))

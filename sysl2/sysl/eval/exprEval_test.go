@@ -23,14 +23,14 @@ func TestEvalStrategySetup(t *testing.T) {
 	for key := range valueFunctions {
 		idx := strings.Index(key, "_Value")
 		op := key[:idx]
-		_, has := functionEvalStrategy[sysl.Expr_BinExpr_Op(sysl.Expr_BinExpr_Op_value[op])]
+		_, has := functionEvalStrategy(sysl.Expr_BinExpr_Op(sysl.Expr_BinExpr_Op_value[op]))
 		assert.True(t, has, "%#v", key)
 	}
 
 	for key := range exprFunctions {
 		idx := strings.Index(key, "_Value")
 		op := key[:idx]
-		_, has := functionEvalStrategy[sysl.Expr_BinExpr_Op(sysl.Expr_BinExpr_Op_value[op])]
+		_, has := functionEvalStrategy(sysl.Expr_BinExpr_Op(sysl.Expr_BinExpr_Op_value[op]))
 		assert.True(t, has, "%#v", key)
 	}
 }

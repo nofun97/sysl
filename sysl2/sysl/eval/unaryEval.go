@@ -7,13 +7,17 @@ import (
 
 type unaryFunc func(*sysl.Value) *sysl.Value
 
-//nolint:gochecknoglobals
-var unaryFunctions = map[sysl.Expr_UnExpr_Op]unaryFunc{
-	sysl.Expr_UnExpr_NEG: unaryNeg,
+func unaryFunction(op sysl.Expr_UnExpr_Op) (unaryFunc, bool) {
+	switch op {
+	case sysl.Expr_UnExpr_NEG:
+		return unaryNeg, true
+	default:
+		return nil, false
+	}
 }
 
 func evalUnaryFunc(op sysl.Expr_UnExpr_Op, arg *sysl.Value) *sysl.Value {
-	if x, has := unaryFunctions[op]; has {
+	if x, has := unaryFunction(op); has {
 		return x(arg)
 	}
 	panic(errors.Errorf("evalUnaryFunc: Operation %v not supported\n", op))
