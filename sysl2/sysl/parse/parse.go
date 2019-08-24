@@ -51,6 +51,7 @@ func (p *Parser) Parse(filename string, fs afero.Fs) (*sysl.Module, error) {
 		lexer := parser.NewSyslLexer(input)
 		defer parser.DeleteLexerState(lexer)
 		stream := antlr.NewCommonTokenStream(lexer, 0)
+		parser.DeleteLexerState(lexer)
 		p := parser.NewSyslParser(stream)
 		p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
 		p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
